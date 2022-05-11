@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -8,6 +9,7 @@ using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Newtonsoft.Json.Linq;
 
 namespace Business.Concrete
 {
@@ -94,6 +96,20 @@ namespace Business.Concrete
             {
                 return new ErrorDataResult<List<Person>>(_personDal.GetList(p => p.city == city).ToList());
             }
+        }
+
+        public object Aggregate1()
+        {
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\EvDelüxe\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto1.json"));
+
+            return data;
+        }
+
+        public object Aggregate2()
+        {
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\EvDelüxe\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
+
+            return data;
         }
     }
 }

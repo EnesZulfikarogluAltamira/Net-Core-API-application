@@ -167,6 +167,28 @@
 
       "DownstreamPathTemplate": "/api/persons/getall",
       "DownstreamScheme": "http"
+    },
+
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "EmployeeService",
+      "UpstreamPathTemplate": "/aggregate1",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamPathTemplate": "/api/persons/aggregate1",
+      "DownstreamScheme": "http",
+      "Key": "aggregate1"
+    },
+
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "EmployeeService",
+      "UpstreamPathTemplate": "/aggregate2",
+      "UpstreamHttpMethod": [ "Get" ],
+
+      "DownstreamPathTemplate": "/api/persons/aggregate2",
+      "DownstreamScheme": "http",
+      "Key": "aggregate2"
     }
 
   ],
@@ -210,6 +232,15 @@
         "employee"
       ],
       "UpstreamPathTemplate": "/default-aggregate"
+    },
+
+    {
+      "RouteKeys": [
+        "aggregate1",
+        "aggregate2"
+      ],
+      "UpstreamPathTemplate": "/ListAggregate",
+      "Aggregator": "ListAggregator"
     }
   ],
 

@@ -14,5 +14,7 @@ namespace Business.Abstract
         IResult Add(Person person);
         IResult Delete(Person person);
         IResult Update(Person person);
+        object Aggregate1();
+        object Aggregate2();
     }
 }

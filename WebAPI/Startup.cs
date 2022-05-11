@@ -23,6 +23,7 @@ using WebAPI.Installers;
 using Core.Utilities.Cache;
 using WebAPI.Extensions;
 using Consul;
+using Newtonsoft.Json;
 
 namespace WebAPI
 {
@@ -116,6 +117,7 @@ namespace WebAPI
 
             services.ConfigureConsul(Configuration);
 
+            services.AddMvcCore().AddNewtonsoftJson();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

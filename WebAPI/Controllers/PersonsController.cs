@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Core.Utilities.Cache;
+using Newtonsoft.Json.Linq;
 
 namespace WebAPI.Controllers
 {
@@ -327,5 +328,23 @@ namespace WebAPI.Controllers
             }
 
         }
+
+        [HttpGet("aggregate1")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult Aggregate1()
+        {
+            var data = _personService.Aggregate1();
+            return Ok(data);
+        }
+
+
+        [HttpGet("aggregate2")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult Aggregate2()
+        {
+            var data = _personService.Aggregate2();
+            return Ok(data);
+        }
+
     }
 }

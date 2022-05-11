@@ -1,0 +1,40 @@
+{
+  "categoryList": [
+
+    {
+
+      "id": 1251,
+
+      "name": "Hobi & Oyuncak",
+
+      "imageUrl": "/repository/CondoLife/UserFiles/Site-b00ce4f4-66b5-4acd-ad7f-9ccb5a420bde/ConciergeVendor/21/ConciergeVendorPhoto/c3fb5edd-2c4a-4d65-9086-d84fbcb1e279.jpeg",
+
+      "hasProduct": false
+
+    },
+
+    {
+
+      "id": 1253,
+
+      "name": "Konser",
+
+      "imageUrl": "/repository/CondoLife/UserFiles/Site-b00ce4f4-66b5-4acd-ad7f-9ccb5a420bde/Category/24/ProductCategoryPhoto/b2d9e417-c30d-4c69-971c-c54451b3c65e_concert.jpeg",
+
+      "hasProduct": false
+
+    }
+
+  ],
+
+  "pageNumber": 1,
+
+  "pageSize": 5,
+
+  "totalRowCount": 41,
+
+  "pageCount": 9,
+
+  "objectList": null
+
+}

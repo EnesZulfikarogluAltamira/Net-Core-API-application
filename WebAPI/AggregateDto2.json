@@ -1,0 +1,39 @@
+{
+  "categoryList": [
+    {
+
+      "id": 1460,
+
+      "name": "Hukuki Belge Çeviri",
+
+      "imageUrl": "/repository/CondoLife/UserFiles/Site-b00ce4f4-66b5-4acd-ad7f-9ccb5a420bde/ConciergeVendor/101/ConciergeVendorPhoto/8d62e62b-2c1c-4c54-8ec0-ad46e39d61c2.jpeg",
+
+      "hasProduct": true
+
+    },
+
+    {
+
+      "id": 1463,
+
+      "name": "Özel Gezi Rehberliði",
+
+      "imageUrl": "/repository/CondoLife/UserFiles/Site-b00ce4f4-66b5-4acd-ad7f-9ccb5a420bde/ConciergeVendor/105/ConciergeVendorPhoto/1ee3a499-428d-454d-8ea2-cf1dbf4ed439.jpg",
+
+      "hasProduct": true
+
+    }
+
+  ],
+
+  "pageNumber": 1,
+
+  "pageSize": 5,
+
+  "totalRowCount": 41,
+
+  "pageCount": 9,
+
+  "objectList": null
+
+}
