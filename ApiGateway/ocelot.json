@@ -173,7 +173,7 @@
       "UseServiceDiscovery": true,
       "ServiceName": "EmployeeService",
       "UpstreamPathTemplate": "/aggregate1",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [ "Post" ],
 
       "DownstreamPathTemplate": "/api/persons/aggregate1",
       "DownstreamScheme": "http",
@@ -184,7 +184,7 @@
       "UseServiceDiscovery": true,
       "ServiceName": "EmployeeService",
       "UpstreamPathTemplate": "/aggregate2",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [ "Post" ],
 
       "DownstreamPathTemplate": "/api/persons/aggregate2",
       "DownstreamScheme": "http",
@@ -240,7 +240,8 @@
         "aggregate2"
       ],
       "UpstreamPathTemplate": "/ListAggregate",
-      "Aggregator": "ListAggregator"
+      "Aggregator": "ListAggregator",
+      "UpstreamHttpMethod": [ "Post" ]
     }
   ],
 

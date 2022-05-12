@@ -9,6 +9,7 @@ using Business.Constants;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Newtonsoft.Json.Linq;
 
 namespace Business.Concrete
@@ -98,16 +99,20 @@ namespace Business.Concrete
             }
         }
 
-        public object Aggregate1()
+        public object Aggregate1(AggregatorDto myDto)
         {
             JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\User\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto1.json"));
+
+            data["pageSize"] = (int)myDto.pageSize;
 
             return data;
         }
 
-        public object Aggregate2()
+        public object Aggregate2(AggregatorDto1 myDto)
         {
             JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\user\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
+
+            data["pageSize"] = (int)myDto.pageSize1;
 
             return data;
         }

@@ -9,6 +9,7 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Core.Utilities.Cache;
 using Newtonsoft.Json.Linq;
+using Entities.Dtos;
 
 namespace WebAPI.Controllers
 {
@@ -329,20 +330,20 @@ namespace WebAPI.Controllers
 
         }
 
-        [HttpGet("aggregate1")]
+        [HttpPost("aggregate1")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult Aggregate1()
+        public IActionResult Aggregate1(AggregatorDto myDto)
         {
-            var data = _personService.Aggregate1();
+            var data = _personService.Aggregate1(myDto);
             return Ok(data);
         }
 
 
-        [HttpGet("aggregate2")]
+        [HttpPost("aggregate2")]
         //[Authorize(Roles = "Admin")]
-        public IActionResult Aggregate2()
+        public IActionResult Aggregate2(AggregatorDto1 myDto)
         {
-            var data = _personService.Aggregate2();
+            var data = _personService.Aggregate2(myDto);
             return Ok(data);
         }
 
