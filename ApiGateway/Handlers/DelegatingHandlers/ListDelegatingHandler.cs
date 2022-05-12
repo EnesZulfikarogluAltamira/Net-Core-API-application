@@ -48,17 +48,14 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             var request1 = EditRequest(request, originalContent, employeeServiceUri, keys);
             var request2 = EditRequest(request, originalContent, employeeServiceUri, keys);
 
+            var task1 = Task.Run(() => SendRequest(request1, cancellationToken));
+            var task2 = Task.Run(() => SendRequest(request2, cancellationToken));
 
-            Thread thread1 = new Thread(new ThreadStart(SendRequest(request1, cancellationToken));
-            Thread thread2 = new Thread(new ThreadStart(SendRequest(request2, cancellationToken)));
-
-            thread1.Start();
-            thread2.Start();
+            var response1 = await task1;
+            var response2 = await task2;
 
             responses.Add(response1);
             responses.Add(response2);
-
-
 
             JObject baseJsonObject = new JObject();
             JObject jsonObject = new JObject();
