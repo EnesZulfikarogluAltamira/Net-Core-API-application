@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AltamiraDBContext))]
-    [Migration("20220113135827_test")]
+    [Migration("20220317091532_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

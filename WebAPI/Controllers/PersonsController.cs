@@ -26,6 +26,9 @@ namespace WebAPI.Controllers
             redisConnection = _redisService.CheckConnectionWithTimeLimit(TimeSpan.FromMilliseconds(100));
         }
 
+        [HttpGet("status")]
+        public IActionResult Status() => Ok("App is running");
+
         /// <summary>
         /// Get the list of all persons - User authentication is required
         /// </summary>

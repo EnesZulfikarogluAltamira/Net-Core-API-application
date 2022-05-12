@@ -3,60 +3,16 @@ version: '3.6'
 
 services:
     
-    ms-sql-server:
-        image:  mcr.microsoft.com/mssql/server:2017-latest-ubuntu
-        container_name: ms-sql-server
-        environment:
-            - ACCEPT_EULA=Y
-            - SA_PASSWORD=enes123456
-            - MSSQL_PID=Express
-        ports:
-            - "1433:1433"
-        networks:
-            - localdev
-
     s_consul:
         container_name: c_consul
-        image: consul
+        image: stefanscherer/consul-windows
         ports:
             - "8500:8500"
             - "8600:8600/tcp"
             - "8600:8600/udp"
         networks:
             - localdev
-
-    elasticsearch:
-       container_name: elasticsearch
-       image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
-       ports:
-        - 9200:9200
-       volumes:
-        - elasticsearch-data:/usr/share/elasticsearch/data
-       environment:
-        - xpack.monitoring.enabled=true
-        - xpack.watcher.enabled=false
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        - discovery.type=single-node
-       networks:
-        - elastic
-
-    kibana:
-       container_name: kibana
-       image: docker.elastic.co/kibana/kibana:7.6.2
-       ports:
-        - 5601:5601
-       depends_on:
-        - elasticsearch
-       environment:
-        - ELASTICSEARCH_URL=http://localhost:9200
-       networks:
-        - elastic
   
 networks:
-    elastic:
-        driver: bridge
     localdev:
         name: localdev
-
-volumes:
-  elasticsearch-data:

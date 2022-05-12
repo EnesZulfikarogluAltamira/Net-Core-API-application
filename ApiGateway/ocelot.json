@@ -218,6 +218,7 @@
     "ServiceDiscoveryProvider": {
       "Host": "localhost",
       "Port": 8500,
+      "Token": "1bf93d81-6448-0e63-6354-31c728daddc0",
       "Type": "Consul"
     }
   }

@@ -48,7 +48,7 @@ namespace WebAPI
                     builder => builder.WithOrigins("http://localhost:3000"));
             });
 
-            var connection = Configuration.GetValue<string>("ConnectionStrings:DockerSqlConnection");
+            var connection = Configuration.GetValue<string>("ConnectionStrings:LocalConnection");
             services.AddDbContext<AltamiraDBContext>(options =>
             options.UseSqlServer(connection));
 
@@ -146,7 +146,7 @@ namespace WebAPI
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
 
-            //PrepDB.PrepPopulation(app);
+            PrepDB.PrepPopulation(app);
 
             app.RegisterWithConsul(lifetime);
         }

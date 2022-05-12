@@ -17,10 +17,13 @@ namespace WebAPI.Extensions
     {
         public static IServiceCollection ConfigureConsul(this IServiceCollection services, IConfiguration configuration)
         {
+            var SecretID = "1bf93d81-6448-0e63-6354-31c728daddc0";
+            
             services.AddSingleton<IConsulClient, ConsulClient>(p => new ConsulClient(consulConfig =>
             {
                 var address = configuration["consulConfig:Address"];
                 consulConfig.Address = new Uri(address);
+                consulConfig.Token = SecretID;
             }));
 
             return services;
@@ -42,24 +45,35 @@ namespace WebAPI.Extensions
             var address = "http://localhost:9000";
 
             var uri = new Uri(address);
+
             var registration = new AgentServiceRegistration()
             {
                 ID = $"EmployeeService",
                 Name = "EmployeeService",
                 Address = $"{uri.Host}",
                 Port = uri.Port,
-                Tags = new[] {"Employee Service", "Employee"}
+                Tags = new[] {"Employee Service", "Employee"},
+                Check = new AgentServiceCheck()
+                {
+                    Name = "HealthCheck-1",
+                    HTTP = "http://31.210.93.228:1038/health",
+                    Method = "GET",
+                    Interval = TimeSpan.FromSeconds(10),
+                }
             };
 
             logger.LogInformation("Registering with Consul");
+
             consulClient.Agent.ServiceDeregister(registration.ID).Wait();
             consulClient.Agent.ServiceRegister(registration).Wait();
 
-            lifetime.ApplicationStopping.Register(() =>
-            {
-                logger.LogInformation("Deregistering from Consul");
-                consulClient.Agent.ServiceDeregister(registration.ID).Wait();
-            });
+            consulClient.Health.Checks("EmployeeService").Wait();
+
+            //lifetime.ApplicationStopping.Register(() =>
+            //{
+            //    logger.LogInformation("Deregistering from Consul");
+            //    consulClient.Agent.ServiceDeregister(registration.ID).Wait();
+            //});
 
             return app;
         }
