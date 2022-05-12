@@ -10,6 +10,7 @@ using System.Net;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using Ocelot.Middleware;
+using Consul;
 
 namespace ApiGateway.Handlers.DelegatingHandlers
 {
@@ -20,44 +21,44 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             // Changes to the request should be added here 
 
             var responses = new List<HttpResponseMessage>();
+            var employeeServiceUriString = "";
 
-            var stringContent = request.Content.ReadAsStringAsync().Result;
+            var consulClient = new ConsulClient(c => c.Address = new Uri("http://localhost:8500"));
+            var services = consulClient.Agent.Services().Result.Response;
+            foreach (var service in services)
+            {
+                var isEmployeeService = service.Value.Tags.Any(t => t == "EmployeeService");
+
+                if (isEmployeeService)
+                {
+                    employeeServiceUriString = $"http://{service.Value.Address}:{service.Value.Port}{request.RequestUri.PathAndQuery}";
+                }
+            }
+
+            Uri employeeServiceUri = new Uri(employeeServiceUriString);
+
+            var stringContent = await request.Content.ReadAsStringAsync();
 
             JObject originalContent = JObject.Parse(stringContent);
 
-            JObject editedContent = new JObject();
+            List<string> keys = new List<string>();
+            keys.Add("pageSize");
+            keys.Add("pageCount");
 
-            editedContent["pageSize"] = (int)originalContent["pageSize"];
-            editedContent["pageCount"] = (int)originalContent["pageCount"];
+            var request1 = EditRequest(request, originalContent, employeeServiceUri, keys);
+            var request2 = EditRequest(request, originalContent, employeeServiceUri, keys);
 
-            HttpRequestMessage request1 = request;
-            request1.Method = HttpMethod.Post;
-            request1.Headers.Add("Accept", "application/json");
-            request1.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
-            request1.RequestUri = new Uri("http://localhost:9000/api/persons/aggregate1");
 
-            editedContent = new JObject();
+            Thread thread1 = new Thread(new ThreadStart(SendRequest(request1, cancellationToken));
+            Thread thread2 = new Thread(new ThreadStart(SendRequest(request2, cancellationToken)));
 
-            editedContent["pageSize1"] = (int)originalContent["pageSize1"];
-            editedContent["pageCount1"] = (int)originalContent["pageCount1"];
+            thread1.Start();
+            thread2.Start();
 
-            var response1 = await base.SendAsync(request1, cancellationToken);
             responses.Add(response1);
-
-
-            HttpRequestMessage request2 = request;
-            request2.Method = HttpMethod.Post;
-            request2.Headers.Add("Accept", "application/json");
-            request2.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
-            request2.RequestUri = new Uri("http://localhost:9000/api/persons/aggregate2");
-
-
-
-            //request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
-
-            //request.Content = new ByteArrayContent(content);
-            var response2 = await base.SendAsync(request1, cancellationToken);
             responses.Add(response2);
+
+
 
             JObject baseJsonObject = new JObject();
             JObject jsonObject = new JObject();
@@ -113,6 +114,28 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             {
                 val += (int)jsonObject[key];
             }
+        }
+
+        private HttpRequestMessage EditRequest(HttpRequestMessage request, JObject originalContent, Uri uri, List<string> keys)
+        {
+            var editedContent = new JObject();
+
+            foreach (var key in keys)
+            {
+                editedContent[key] = (int)originalContent[key];
+            }
+
+            request.Method = HttpMethod.Post;
+            request.Headers.Add("Accept", "application/json");
+            request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
+            request.RequestUri = uri;
+
+            return request;
+        }
+
+        private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

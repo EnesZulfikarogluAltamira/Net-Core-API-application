@@ -48,7 +48,7 @@ namespace WebAPI.Extensions
                 Name = "EmployeeService",
                 Address = $"{uri.Host}",
                 Port = uri.Port,
-                Tags = new[] {"Employee Service", "Employee"}
+                Tags = new[] {"EmployeeService", "Employee"}
             };
 
             logger.LogInformation("Registering with Consul");
