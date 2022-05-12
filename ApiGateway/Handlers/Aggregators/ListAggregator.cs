@@ -27,6 +27,7 @@ namespace ApiGateway.Handlers.Aggregators
             var contentBuilder = new StringBuilder();
             JObject baseJsonObject = new JObject();
             JObject jsonObject = new JObject();
+            int pageSize = 0, pageCount = 0;
 
             for (int i = 0; i < responses.Count; i++)
             {
@@ -47,6 +48,9 @@ namespace ApiGateway.Handlers.Aggregators
                         MergeArrayHandling = MergeArrayHandling.Union
                     });
 
+                    SumValues(jsonObject, "pageSize", ref pageSize);
+                    SumValues(jsonObject, "pageCount", ref pageCount);
+
                 }
                 catch (Exception ex)
                 {
@@ -54,6 +58,8 @@ namespace ApiGateway.Handlers.Aggregators
                 }
             }
 
+            baseJsonObject["pageSize"] = pageSize;
+            baseJsonObject["pageCount"] = pageCount;
 
             var stringContent = new StringContent(baseJsonObject.ToString())
             {
@@ -72,19 +78,12 @@ namespace ApiGateway.Handlers.Aggregators
             return content;
         }
 
-        private JObject filterKeys(JObject obj)
+        private static void SumValues(JObject jsonObject, string key, ref int val)
         {
-            var result = new JObject();
-
-            foreach (var key in obj)
+            if (jsonObject.ContainsKey(key))
             {
-                //if (obj.ContainsKey(key.ToString()))
-                //{
-                //    obj[key].Aggregate;
-                //}
-                //  result[key] = (key in result? result[key].concat(obj[key]) : obj[key]);
+                val += (int)jsonObject[key];
             }
-            return result;
         }
     }
 }

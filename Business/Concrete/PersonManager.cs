@@ -100,14 +100,14 @@ namespace Business.Concrete
 
         public object Aggregate1()
         {
-            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\EvDelüxe\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto1.json"));
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\User\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto1.json"));
 
             return data;
         }
 
         public object Aggregate2()
         {
-            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\EvDelüxe\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\user\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
 
             return data;
         }
