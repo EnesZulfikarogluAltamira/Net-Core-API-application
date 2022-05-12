@@ -62,6 +62,8 @@ namespace ApiGateway
                 .AddSingletonDefinedAggregator<ResponseAggregator>()
                 .AddSingletonDefinedAggregator<ListAggregator>()
                 .AddDelegatingHandler<BaseDelegatingHandler>(true)
+                .AddDelegatingHandler<ListDelegatingHandler>(false)
+                .AddDelegatingHandler<ListDelegatingHandler1>(false)
                 .AddCacheManager(x =>
                 {
                     x.WithDictionaryHandle();

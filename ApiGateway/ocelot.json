@@ -189,6 +189,19 @@
       "DownstreamPathTemplate": "/api/persons/aggregate2",
       "DownstreamScheme": "http",
       "Key": "aggregate2"
+    },
+
+    {
+      "UseServiceDiscovery": true,
+      "ServiceName": "EmployeeService",
+      "UpstreamPathTemplate": "/DelegatingAggregator",
+      "UpstreamHttpMethod": [ "Post" ],
+
+      "DownstreamPathTemplate": "/api/persons/aggregate1",
+      "DownstreamScheme": "http",
+      "DelegatingHandlers": [
+        "ListDelegatingHandler"
+      ]
     }
 
   ],
@@ -240,8 +253,7 @@
         "aggregate2"
       ],
       "UpstreamPathTemplate": "/ListAggregate",
-      "Aggregator": "ListAggregator",
-      "UpstreamHttpMethod": [ "Post" ]
+      "Aggregator": "ListAggregator"
     }
   ],
 

@@ -18,9 +18,9 @@ namespace Business.Concrete
     {
         private IPersonDal _personDal;
 
-        public PersonManager(IPersonDal personDal)
+        public PersonManager()
         {
-            _personDal = personDal;
+            //_personDal = personDal;
         }
 
         public IResult Add(Person person)
