@@ -24,7 +24,6 @@ using Serilog.Formatting.Elasticsearch;
 using Serilog.Sinks.Elasticsearch;
 using Core.Utilities.Security.Jwt;
 using Core.Utilities.Security.Encryption;
-using ApiGateway.Extensions;
 
 namespace ApiGateway
 {
@@ -64,7 +63,6 @@ namespace ApiGateway
                 .AddSingletonDefinedAggregator<ListAggregator>()
                 .AddDelegatingHandler<BaseDelegatingHandler>(false)
                 .AddDelegatingHandler<ListDelegatingHandler>(false)
-                .AddDelegatingHandler<ListDelegatingHandler1>(false)
                 .AddCacheManager(x =>
                 {
                     x.WithDictionaryHandle();
@@ -114,8 +112,6 @@ namespace ApiGateway
                     IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                 };
             });
-
-            services.ConfigureConsul(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

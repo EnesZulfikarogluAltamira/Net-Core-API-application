@@ -18,11 +18,11 @@ namespace ApiGateway.Handlers.DelegatingHandlers
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            // Changes to the request should be added here 
-
             var responses = new List<HttpResponseMessage>();
             var employeeServiceUriString = "";
 
+
+            // Consul Client ile tag'ler kullanılarak service bilgileri alınır.
             var consulClient = new ConsulClient(c => c.Address = new Uri("http://localhost:8500"));
             var services = consulClient.Agent.Services().Result.Response;
             foreach (var service in services)
@@ -34,20 +34,34 @@ namespace ApiGateway.Handlers.DelegatingHandlers
                     employeeServiceUriString = $"http://{service.Value.Address}:{service.Value.Port}{request.RequestUri.PathAndQuery}";
                 }
             }
-
             Uri employeeServiceUri = new Uri(employeeServiceUriString);
 
+
+            // originalContent değişkenine içerisine orijinal request body yazılır.
             var stringContent = await request.Content.ReadAsStringAsync();
 
             JObject originalContent = JObject.Parse(stringContent);
+
+
+            // Kullanılacak requestler oluşturulup düzenlenir.
+            var request1 = new HttpRequestMessage();
+            var request2 = new HttpRequestMessage();
 
             List<string> keys = new List<string>();
             keys.Add("pageSize");
             keys.Add("pageCount");
 
-            var request1 = EditRequest(request, originalContent, employeeServiceUri, keys);
-            var request2 = EditRequest(request, originalContent, employeeServiceUri, keys);
+            EditRequest(ref request1, originalContent, employeeServiceUri, keys);
+            
+            keys = new List<string>();
+            keys.Add("pageSize1");
+            keys.Add("pageCount1");
 
+            employeeServiceUri = new Uri(employeeServiceUriString.Replace("1", "2")); // test icin yazilmistir. Aynı path oldugu surece yazılması gerekmeyecek.
+            EditRequest(ref request2, originalContent, employeeServiceUri, keys);
+
+
+            // Paralel işlemler oluşturmak için task'lar oluşturulur ve çağrılır. Response'lar listeye eklenir.
             var task1 = Task.Run(() => SendRequest(request1, cancellationToken));
             var task2 = Task.Run(() => SendRequest(request2, cancellationToken));
 
@@ -57,6 +71,45 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             responses.Add(response1);
             responses.Add(response2);
 
+            // Response'lar birleştirilip döndürülür.
+            return await AggregateResponses(responses);
+        }
+
+        // Verilen Json nesnelerindeki key girdilerinin value değerlerini toplayan fonksiyondur.
+        private static void SumValues(JObject jsonObject, string key, ref int val)
+        {
+            if (jsonObject.ContainsKey(key))
+            {
+                val += (int)jsonObject[key];
+            }
+        }
+
+        // Request'i girilen değerlere göre düzenleyen fonksiyondur.
+        private static void EditRequest(ref HttpRequestMessage request, JObject originalContent, Uri uri, List<string> keys)
+        {
+            var editedContent = new JObject();
+
+            foreach (var key in keys)
+            {
+                editedContent[key] = (int)originalContent[key];
+            }
+
+            request.Method = HttpMethod.Post;
+            request.Headers.Add("Accept", "application/json");
+            request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
+            request.RequestUri = uri;
+        }
+
+        // Request'i gönderip response döndüren fonksiyondur.
+        private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            return await base.SendAsync(request, cancellationToken);
+        }
+
+        // Verilen response listesindeki response'ları birleştiren fonksiyondur.
+        private async Task<HttpResponseMessage> AggregateResponses(List<HttpResponseMessage> responses)
+        {
+            // Dönen response'ları istenilen şekilde birleştirilir ve tek bir response oluşturulur.
             JObject baseJsonObject = new JObject();
             JObject jsonObject = new JObject();
             int pageSize = 0, pageCount = 0;
@@ -65,11 +118,6 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             {
                 try
                 {
-                    //if(i == 0)
-                    //{
-                    //    JObject baseJsonObject = new JObject(await responses[i].Items.DownstreamResponse().Content.ReadAsStringAsync());
-                    //}
-                    var MergeBuilder = new StringBuilder();
                     var jsonString = await responses[i].Content.ReadAsStringAsync();
 
                     jsonObject = JObject.Parse(jsonString);
@@ -103,36 +151,6 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             finalResponse.Content = responseContent;
 
             return finalResponse;
-        }
-
-        private static void SumValues(JObject jsonObject, string key, ref int val)
-        {
-            if (jsonObject.ContainsKey(key))
-            {
-                val += (int)jsonObject[key];
-            }
-        }
-
-        private HttpRequestMessage EditRequest(HttpRequestMessage request, JObject originalContent, Uri uri, List<string> keys)
-        {
-            var editedContent = new JObject();
-
-            foreach (var key in keys)
-            {
-                editedContent[key] = (int)originalContent[key];
-            }
-
-            request.Method = HttpMethod.Post;
-            request.Headers.Add("Accept", "application/json");
-            request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
-            request.RequestUri = uri;
-
-            return request;
-        }
-
-        private async Task<HttpResponseMessage> SendRequest(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return await base.SendAsync(request, cancellationToken);
         }
     }
 }
