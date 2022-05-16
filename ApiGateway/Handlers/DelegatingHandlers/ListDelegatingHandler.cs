@@ -44,29 +44,27 @@ namespace ApiGateway.Handlers.DelegatingHandlers
 
 
             // Kullanılacak requestler oluşturulup düzenlenir.
-            var request1 = new HttpRequestMessage();
-            var request2 = new HttpRequestMessage();
-
             List<string> keys = new List<string>();
             keys.Add("pageSize");
             keys.Add("pageCount");
 
-            EditRequest(ref request1, originalContent, employeeServiceUri, keys);
+            var request1 = CreateRequest(originalContent, employeeServiceUri, keys);
             
             keys = new List<string>();
             keys.Add("pageSize1");
             keys.Add("pageCount1");
 
             employeeServiceUri = new Uri(employeeServiceUriString.Replace("1", "2")); // test icin yazilmistir. Aynı path oldugu surece yazılması gerekmeyecek.
-            EditRequest(ref request2, originalContent, employeeServiceUri, keys);
+            var request2 = CreateRequest(originalContent, employeeServiceUri, keys);
 
 
             // Paralel işlemler oluşturmak için task'lar oluşturulur ve çağrılır. Response'lar listeye eklenir.
             var task1 = Task.Run(() => SendRequest(request1, cancellationToken));
             var task2 = Task.Run(() => SendRequest(request2, cancellationToken));
-
+            //Task.WaitAll(task1,task2);
             var response1 = await task1;
             var response2 = await task2;
+
 
             responses.Add(response1);
             responses.Add(response2);
@@ -85,8 +83,9 @@ namespace ApiGateway.Handlers.DelegatingHandlers
         }
 
         // Request'i girilen değerlere göre düzenleyen fonksiyondur.
-        private static void EditRequest(ref HttpRequestMessage request, JObject originalContent, Uri uri, List<string> keys)
+        private HttpRequestMessage CreateRequest(JObject originalContent, Uri uri, List<string> keys)
         {
+            var request = new HttpRequestMessage();
             var editedContent = new JObject();
 
             foreach (var key in keys)
@@ -98,6 +97,8 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             request.Headers.Add("Accept", "application/json");
             request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
             request.RequestUri = uri;
+
+            return request;
         }
 
         // Request'i gönderip response döndüren fonksiyondur.
@@ -112,7 +113,7 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             // Dönen response'ları istenilen şekilde birleştirilir ve tek bir response oluşturulur.
             JObject baseJsonObject = new JObject();
             JObject jsonObject = new JObject();
-            int pageSize = 0, pageCount = 0;
+            int totalRowCount = 0;
 
             for (int i = 0; i < responses.Count; i++)
             {
@@ -128,9 +129,7 @@ namespace ApiGateway.Handlers.DelegatingHandlers
                         MergeArrayHandling = MergeArrayHandling.Union
                     });
 
-                    SumValues(jsonObject, "pageSize", ref pageSize);
-                    SumValues(jsonObject, "pageCount", ref pageCount);
-
+                    SumValues(jsonObject, "totalRowCount", ref totalRowCount);
                 }
                 catch (Exception ex)
                 {
@@ -138,8 +137,8 @@ namespace ApiGateway.Handlers.DelegatingHandlers
                 }
             }
 
-            baseJsonObject["pageSize"] = pageSize;
-            baseJsonObject["pageCount"] = pageCount;
+            baseJsonObject["totalRowCount"] = totalRowCount;
+            baseJsonObject["pageCount"] = Math.Ceiling((decimal)(totalRowCount / (int)baseJsonObject["pageSize"]));
 
             var responseContent = new StringContent(baseJsonObject.ToString())
             {

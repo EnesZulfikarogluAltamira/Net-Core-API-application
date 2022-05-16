@@ -61,7 +61,7 @@ namespace ApiGateway
                 .AddOcelot()
                 .AddSingletonDefinedAggregator<ResponseAggregator>()
                 .AddSingletonDefinedAggregator<ListAggregator>()
-                .AddDelegatingHandler<BaseDelegatingHandler>(false)
+                .AddDelegatingHandler<BaseDelegatingHandler>(true)
                 .AddDelegatingHandler<ListDelegatingHandler>(false)
                 .AddCacheManager(x =>
                 {
