@@ -17,5 +17,6 @@ namespace Business.Abstract
         IResult Update(Person person);
         object Aggregate1(AggregatorDto myDto);
         object Aggregate2(AggregatorDto1 myDto);
+        object Aggregate3();
     }
 }

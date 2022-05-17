@@ -347,5 +347,12 @@ namespace WebAPI.Controllers
             return Ok(data);
         }
 
+        [HttpGet("aggregate3")]
+        //[Authorize(Roles = "Admin")]
+        public IActionResult Aggregate3()
+        {
+            var data = _personService.Aggregate3();
+            return Ok(data);
+        }
     }
 }

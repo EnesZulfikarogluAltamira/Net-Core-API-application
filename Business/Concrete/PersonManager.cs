@@ -110,9 +110,16 @@ namespace Business.Concrete
 
         public object Aggregate2(AggregatorDto1 myDto)
         {
-            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\user\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\User\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
 
             data["pageSize"] = (int)myDto.pageSize1;
+
+            return data;
+        }
+
+        public object Aggregate3()
+        {
+            JObject data = JObject.Parse(File.ReadAllText(@"C:\Users\User\Documents\GitHub\Net-Core-API-application\WebAPI\AggregateDto2.json"));
 
             return data;
         }

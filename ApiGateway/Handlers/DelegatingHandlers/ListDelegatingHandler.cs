@@ -49,7 +49,7 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             keys.Add("pageCount");
 
             var request1 = CreateRequest(originalContent, employeeServiceUri, keys);
-            
+
             keys = new List<string>();
             keys.Add("pageSize1");
             keys.Add("pageCount1");
@@ -83,19 +83,26 @@ namespace ApiGateway.Handlers.DelegatingHandlers
         }
 
         // Request'i girilen değerlere göre düzenleyen fonksiyondur.
-        private HttpRequestMessage CreateRequest(JObject originalContent, Uri uri, List<string> keys)
+        private HttpRequestMessage CreateRequest(JObject originalContent, Uri uri, List<string> keys = null)
         {
             var request = new HttpRequestMessage();
             var editedContent = new JObject();
 
-            foreach (var key in keys)
+            if (keys != null && keys.Any())
             {
-                editedContent[key] = (int)originalContent[key];
+                foreach (var key in keys)
+                {
+                    editedContent[key] = (int)originalContent[key];
+                }
+                request.Method = HttpMethod.Post;
+                request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
+            }
+            else
+            {
+                request.Method = HttpMethod.Get;
             }
 
-            request.Method = HttpMethod.Post;
             request.Headers.Add("Accept", "application/json");
-            request.Content = new StringContent(editedContent.ToString(), Encoding.UTF8, "application/json");
             request.RequestUri = uri;
 
             return request;
@@ -138,7 +145,7 @@ namespace ApiGateway.Handlers.DelegatingHandlers
             }
 
             baseJsonObject["totalRowCount"] = totalRowCount;
-            baseJsonObject["pageCount"] = Math.Ceiling((decimal)(totalRowCount / (int)baseJsonObject["pageSize"]));
+            baseJsonObject["pageCount"] = (int)Math.Ceiling((decimal)((totalRowCount) / (float)baseJsonObject["pageSize"]));
 
             var responseContent = new StringContent(baseJsonObject.ToString())
             {
